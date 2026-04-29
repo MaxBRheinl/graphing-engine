@@ -2,61 +2,44 @@
   <img src="img/banner.png" style="max-width:100%;">
 </p>
 
-# D3 Graph Theory
+# D3 Graphentheorie – Spezialwerkzeuge für TSS und InfNet
 
-[![Click to see the action](https://forthebadge.com/images/badges/check-it-out.svg)](https://d3gt.com/)
+Dieses Projekt ist eine interaktive Lernplattform für Graphentheorie, die um zwei leistungsstarke Simulationswerkzeuge erweitert wurde: **Target Set Selection (TSS)** und **Influence Networks (InfNet)**. Diese Tools ermöglichen die visuelle Analyse von Ausbreitungsdynamiken und Einflussstrukturen in komplexen Netzwerken.
 
-[![Donate](https://img.shields.io/badge/%24-donate-orange.svg?style=flat-square)](https://www.paypal.me/mrpandey/)
+## Fokus der Erweiterungen
 
-> In mathematics, graph theory is the study of graphs, which are mathematical structures used to model pairwise relations between objects. A graph in this context is made up of vertices, nodes, or points which are connected by edges, arcs, or lines.
-> -- <cite>Wikipedia</cite>
+Der Schwerpunkt dieser Version liegt auf der technischen Implementierung von Modellen der Meinungsdynamik und der strategischen Knotenaktivierung.
 
-D3 Graph Theory is a front-end project aimed at anyone who wants to learn graph theory. It provides a quick and interactive introduction to the subject. The visuals used in the project makes it an effective learning tool.
+### 1. Target Set Selection (TSS)
+Das TSS-Tool widmet sich dem Problem der Identifizierung einer minimalen Menge an Startknoten (Target Set), um eine kaskadenartige Aktivierung im gesamten Netzwerk auszulösen.
 
-## Topics Covered So Far
+*   **Schwellenwert-Logik (Threshold Model):** Jeder Knoten $v$ hat einen individuellen Schwellenwert $t(v)$. Ein Knoten wechselt in den aktiven Zustand, sobald die Anzahl seiner bereits aktiven Nachbarn den Wert $t(v)$ erreicht oder überschreitet.
+*   **Dynamische Konfiguration:** Schwellenwerte können zur Laufzeit für jeden Knoten individuell über das User Interface angepasst werden.
+*   **Simulationssteuerung:**
+    *   **Update Schritt:** Manuelle Durchführung einzelner Iterationen zur Beobachtung der schrittweisen Kaskade.
+    *   **Bis Stabil:** Automatisierte Ausführung der Simulation bis zum Erreichen eines Fixpunktes (Steady State), an dem keine weiteren Aktivierungen mehr erfolgen.
+*   **Interaktion:** Intuitive Graphenerstellung via D3-Drag-and-Drop. Über `Alt + Klick` lassen sich Knoten direkt als Teil des initialen Target Sets markieren.
 
-The whole content is broken in several units. So far these units have been added.
+### 2. Influence Networks (InfNet)
+Das InfNet-Tool stellt eine fortgeschrittene Simulationsumgebung für komplexe Einflussmodelle dar. Es erweitert einfache Schwellenwertmodelle um mathematische Konzepte wie Stabilizer-Gadgets und externe Bias-Einflüsse.
 
-| Table | Of | Contents |
-| --- | --- | --- |
-|1. [Vertices and Edges](https://d3gt.com/unit.html?vertices-and-edges)|2. [Order and Size of a Graph](https://d3gt.com/unit.html?order-and-size)|3. [Degree of a Vertex](https://d3gt.com/unit.html?degree-of-vertex)|
-|4. [Degree Sequence of a Graph](https://d3gt.com/unit.html?degree-sequence)|5. [Graphic Sequence](https://d3gt.com/unit.html?graphic-sequence)|6. [Havel-Hakimi Algorithm](https://d3gt.com/unit.html?havel-hakimi)|
-|7. [Pigeonhole Principle](https://d3gt.com/unit.html?pigeonhole)|8. [Regular Graph](https://d3gt.com/unit.html?regular-graph)|9. [Complete Graph](https://d3gt.com/unit.html?complete-graph)|
-|10. [Bipartite Graph](https://d3gt.com/unit.html?bipartite)|11. [Complete Bipartite Graph](https://d3gt.com/unit.html?complete-bipartite)|12. [Walk](https://d3gt.com/unit.html?walk)|
-|13. [Open vs Closed Walks](https://d3gt.com/unit.html?open-vs-closed)|14. [Connectivity](https://d3gt.com/unit.html?connectivity)|15. [Eulerian Circuit](https://d3gt.com/unit.html?eulerian-circuit)|
-|16. [Eulerian Trail](https://d3gt.com/unit.html?eulerian-trail)|17. [Graph Coloring](https://d3gt.com/unit.html?graph-coloring)|18. [k-Colorable Graph](https://d3gt.com/unit.html?k-colorable)|
-|19. [Chromatic Number](https://d3gt.com/unit.html?chromatic-number)|20. [Trees](https://d3gt.com/unit.html?trees)|21. [Rooted Trees](https://d3gt.com/unit.html?rooted-trees)|
-|22. [Spanning Tree of a Graph](https://d3gt.com/unit.html?spanning-tree)|
+*   **Spezialisierte Knotenarchitektur:**
+    *   **Hauptknoten (Main Nodes):** Die zentralen Entitäten, deren Meinungsausbreitung untersucht wird.
+    *   **Stabilizer-Gadgets:** Komplexe Substrukturen bestehend aus **Connectoren** und **Aktivatoren**. Diese Gadgets werden genutzt, um mathematisch definierte Einflussbedingungen zu stabilisieren und die Dynamik innerhalb des Graphen exakt zu steuern.
+    *   **Dummy-Knoten:** Repräsentation von externen Einflüssen (y-Werte). Positive y-Werte erzeugen weiße Dummies, negative y-Werte erzeugen schwarze Dummy-Paare zur Simulation von System-Bias.
+*   **Algorithmisches Layout & Kraftsimulation:** 
+    *   Implementierung maßgeschneiderter D3-Forces (`force-gadget`) zur automatisierten, radialen Positionierung von Gadgets um die zugehörigen Hauptknoten.
+    *   **Intelligente Ausrichtung:** Unterstützung von Shortcuts zur Optimierung der Topologie: `T` zum Ausrichten von Connectoren, `R` zur Neuorientierung von Gadgets und `O` für ein globales, intelligentes Arrangement des Graphen.
+*   **Update-Sequenzen:** Definition präziser Aktivierungsreihenfolgen mittels JSON-Input (z. B. `["A", "B", "C"]`). Dies ermöglicht die Untersuchung asynchroner Dynamiken und deren Einfluss auf das Konvergenzverhalten des Netzwerks.
+*   **Export-Features:** Integrierte Funktion zum Export der aktuellen Graphenkonfiguration als Bilddatei für die Dokumentation und Analyse.
 
-The project is still expanding. New topics are added from time to time.
+## Technische Details
+Die Erweiterungen nutzen **D3.js (v5)** für die grafische Darstellung und die physikalische Simulation. Die gesamte Logik der Zustandsübergänge, Gadget-Hierarchien und Kraftberechnungen ist in `js/infnet-app.js` und `js/tss-app.js` implementiert. Das Projekt folgt einem rein Frontend-basierten Ansatz und erfordert keine serverseitige Logik oder Build-Tools.
 
-## Upcoming Topics
+## Nutzung
+1. Repository klonen.
+2. `index.html` für die Grundlagen der Graphentheorie aufrufen.
+3. `tss.html` oder `infnet.html` direkt im Browser öffnen, um die spezialisierten Simulationen zu nutzen.
 
-These topics are planned to be added.
-
-- [ ] Planar Graphs
-- [x] Chromatic Number
-- [x] Trees
-- [x] Rooted Trees
-- [x] Spanning Tree
-- [ ] Prim's Algorithm
-- [ ] Kruskal's Algorithm
-
-So, keep checking for updates. :smile:
-
-## Attributions
-
-This project is built with the help of following libraries and projects.
-
-* [D3.js](https://github.com/d3/d3)
-* [MathJax](https://github.com/mathjax/MathJax)
-* [JQuery](https://github.com/jquery/jquery)
-* [Bootstrap](https://github.com/twbs/bootstrap)
-* [Modal Logic Playground](https://github.com/rkirsling/modallogic)
-* [Havel-Hakimi](https://github.com/jacquerie/hh)
-* [iconsanscoffee.com](http://iconsandcoffee.com/)
-* [GitHub Buttons](https://ghbtns.com/)
-
-## License
-
-Copyright (c) 2017 [Avinash Pandey](http://mrpandey.com). Licensed under [MIT License](https://github.com/mrpandey/d3graphTheory/blob/master/LICENSE).
+---
+*Erstellt im Rahmen einer Erweiterung zur detaillierten Untersuchung von Ausbreitungsprozessen in Graphen.*
