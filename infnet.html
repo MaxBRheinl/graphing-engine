@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>InfNet Tool - D3 Graph Theory</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+    <style>
+      #controls {
+        padding: 20px;
+        background: #f8f8f8;
+        border-right: 1px solid #ddd;
+        height: 100vh;
+        overflow-y: auto;
+      }
+      #svg-wrap {
+        background: white;
+        cursor: crosshair;
+      }
+      .vertex {
+        stroke: #000;
+        stroke-width: 2px;
+      }
+      .edge {
+        stroke: #000;
+        stroke-width: 2px;
+      }
+      .dragLine {
+        stroke: #999;
+        stroke-width: 2px;
+        stroke-dasharray: 5,5;
+        pointer-events: none;
+      }
+      .hidden {
+        display: none;
+      }
+      .main-label {
+        font-family: sans-serif;
+        font-size: 30px;
+        fill: #6a6af4;
+        pointer-events: none;
+        user-select: none;
+      }
+      .activator-label {
+        font-family: sans-serif;
+        font-size: 18px;
+        fill: #ed5555;
+        pointer-events: none;
+        user-select: none;
+      }
+      .grid-group line {
+        stroke: #f0f0f0;
+        stroke-width: 1px;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3" id="controls">
+          <h3>InfNet Tool</h3>
+          <hr />
+          
+          <div class="form-group">
+            <label>Knoten hinzufügen:</label>
+            <div class="radio">
+              <label><input type="radio" name="node-type" value="main" checked> Hauptknoten (Main)</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" name="node-type" value="dummy"> Dummy-Knoten</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" name="node-type" value="connector"> Verbindungsknoten (Connector)</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" name="node-type" value="activator"> Stabilizer-Knoten (Activator)</label>
+            </div>
+            <p class="help-block">Klicken Sie in den Bereich rechts, um einen Knoten des gewählten Typs zu erstellen. Ziehen Sie von einem Knoten zum anderen, um eine Kante zu erstellen.</p>
+            <p class="help-block"><strong>Shortcuts:</strong><br>
+              - <em>Shift + Drag</em>: Knoten verschieben (fixieren)<br>
+              - <em>Strg + Klick</em>: Knoten löschen<br>
+              - <em>Alt + Klick</em>: Knoten zur Sequenz hinzufügen<br>
+              - <em>T (während Drag)</em>: Connectoren ausrichten<br>
+              - <em>R (während Hover über Hauptknoten)</em>: Alle Gadgets orientieren<br>
+              - <em>O</em>: Alles intelligent anordnen
+            </p>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="use-stabilizer-gadgets" checked> Stabilizer-Gadgets verwenden
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="use-dummy-nodes"> Dummy-Knoten verwenden
+            </label>
+          </div>
+
+          <div id="dummy-settings" class="hidden" style="margin-left: 20px;">
+            <label>Dummy-Werte (y):</label>
+            <div id="dummy-node-inputs"></div>
+            <p class="help-block">y > 0: 2y weiße Dummies; y < 0: -2y schwarze Dummy-Paare.</p>
+          </div>
+
+          <hr />
+          <div class="form-group">
+            <label for="update-sequence">Update-Sequenz:</label>
+            <input type="text" class="form-control" id="update-sequence" value='["A", "B", "C"]' placeholder='["A", "B"]'>
+            <p class="help-block">Geben Sie die Namen der Knoten in einer Liste an.</p>
+          </div>
+          
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+              <button type="button" class="btn btn-primary" id="start-sequence">Sequenz Starten</button>
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-success" id="next-step" disabled>Nächster Schritt</button>
+            </div>
+          </div>
+          <br>
+          <button type="button" class="btn btn-info btn-block" id="export-image">Graph als Bild exportieren</button>
+          <hr />
+          <button type="button" class="btn btn-danger btn-block" id="clear-graph">Graph löschen</button>
+          
+          <div id="step-info" style="margin-top: 20px;"></div>
+
+          <hr />
+          <h4>Legende</h4>
+          <ul class="list-unstyled">
+            <li><span style="display:inline-block; width:15px; height:15px; border-radius:50%; border:3px solid black; background:white;"></span> Hauptknoten / Connector (Weiß: 0)</li>
+            <li><span style="display:inline-block; width:15px; height:15px; border-radius:50%; border:3px solid black; background:black;"></span> Hauptknoten / Connector (Schwarz: 1)</li>
+            <li><span style="display:inline-block; width:10px; height:10px; border-radius:50%; border:2px solid black; background:white;"></span> Gadget/Dummy (0)</li>
+            <li><span style="display:inline-block; width:10px; height:10px; border-radius:50%; border:2px solid black; background:black;"></span> Gadget/Dummy (1)</li>
+            <li><span style="color: blue; font-weight: bold;">V</span> Hauptlabel</li>
+            <li><span style="color: black; font-weight: bold;">V*</span> Aktivator</li>
+          </ul>
+        </div>
+        
+        <div class="col-md-9" style="padding: 0;">
+          <div id="svg-wrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/infnet-app.js"></script>
+  </body>
+</html>

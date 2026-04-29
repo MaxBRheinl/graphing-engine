@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TSS Tool - D3 Graph Theory</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+    <style>
+      #controls {
+        padding: 20px;
+        background: #f8f8f8;
+        border-right: 1px solid #ddd;
+        height: 100vh;
+        overflow-y: auto;
+      }
+      #svg-wrap {
+        background: white;
+        cursor: crosshair;
+      }
+      .vertex {
+        stroke: #000;
+        stroke-width: 2px;
+      }
+      .edge {
+        stroke: #000;
+        stroke-width: 2px;
+      }
+      .dragLine {
+        stroke: #999;
+        stroke-width: 2px;
+        stroke-dasharray: 5,5;
+        pointer-events: none;
+      }
+      .hidden {
+        display: none;
+      }
+      .main-label {
+        font-family: sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+        fill: #333;
+        pointer-events: none;
+        user-select: none;
+      }
+      .thr-label {
+        font-family: sans-serif;
+        font-size: 14px;
+        fill: #000;
+        pointer-events: none;
+        user-select: none;
+      }
+      .grid-group line {
+        stroke: #f0f0f0;
+        stroke-width: 1px;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-3" id="controls">
+          <h3>TSS Tool</h3>
+          <p>Target Set Selection</p>
+          <hr />
+          
+          <div class="form-group">
+            <label>Knoten hinzufügen:</label>
+            <p class="help-block">Klicken Sie in den Bereich rechts, um einen Knoten zu erstellen. Ziehen Sie von einem Knoten zum anderen, um eine Kante zu erstellen.</p>
+            <p class="help-block"><strong>Shortcuts:</strong><br>
+              - <em>Shift + Drag</em>: Knoten verschieben (fixieren)<br>
+              - <em>Strg + Klick</em>: Knoten löschen<br>
+              - <em>Alt + Klick</em>: Knoten (de)aktivieren (Initialzustand)<br>
+              - <em>O</em>: Alles intelligent anordnen
+            </p>
+          </div>
+
+          <hr />
+          <div id="node-settings">
+            <h4>Knoten-Einstellungen</h4>
+            <div id="thr-inputs-container">
+                <p class="text-muted">Noch keine Knoten vorhanden.</p>
+            </div>
+          </div>
+
+          <hr />
+          <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+              <button type="button" class="btn btn-primary" id="run-step">Update Schritt</button>
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-success" id="run-until-stable">Bis Stabil</button>
+            </div>
+          </div>
+          <br>
+          <button type="button" class="btn btn-warning btn-block" id="reset-states">Zustände zurücksetzen</button>
+          <hr />
+          <button type="button" class="btn btn-info btn-block" id="export-image">Graph als Bild exportieren</button>
+          <hr />
+          <button type="button" class="btn btn-danger btn-block" id="clear-graph">Graph löschen</button>
+          
+          <div id="step-info" style="margin-top: 20px;"></div>
+
+          <hr />
+          <h4>Legende</h4>
+          <ul class="list-unstyled">
+            <li><span style="display:inline-block; width:15px; height:15px; border-radius:50%; border:2px solid black; background:white;"></span> Nicht aktiviert (0)</li>
+            <li><span style="display:inline-block; width:15px; height:15px; border-radius:50%; border:2px solid black; background:#ff4d4d;"></span> Aktiviert (1)</li>
+            <li><strong>thr</strong>: Schwellenwert</li>
+          </ul>
+        </div>
+        
+        <div class="col-md-9" style="padding: 0;">
+          <div id="svg-wrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/tss-app.js"></script>
+  </body>
+</html>
